@@ -1,74 +1,132 @@
-import { useState, useEffect } from 'react';
-import TodoItem from './TodoItem';
-import './App.css';
+import { useState, useEffect } from "react";
+import TodoItem from "./TodoItem";
+import Button from "@mui/material/Button";
+import TextField from "@mui/material/TextField";
+import Typography from "@mui/material/Typography";
+import Box from "@mui/material/Box";
+
+import "@fontsource/roboto/300.css";
+import "./App.css";
 
 function App() {
   const [todos, setTodos] = useState([]);
   const [newTodo, setNewTodo] = useState("");
 
   useEffect(() => {
-    // update update the list of todos
-    // when the component is rendered for the first time
     update();
   }, []);
 
-  // This function updates the component with the
-  // current todo data stored in the server
   function update() {
     fetch(`${process.env.REACT_APP_BACKEND}api/todos`)
-      .then(res => res.json())
-      .then(todo => {
+      .then((res) => res.json())
+      .then((todo) => {
         setTodos(todo.data);
-      })
+      });
   }
 
-  // This function sends a new todo to the server
-  // and then call the update method to update the
-  // component
+  // http://localhost:1337/api/todos    // this is the url we are sending the request to
   function addTodo(e) {
     e.preventDefault();
     let item = newTodo;
     let body = {
       data: {
-        item
-      }
+        item,
+      },
     };
- 
+
     fetch(`${process.env.REACT_APP_BACKEND}api/todos`, {
       method: "POST",
       headers: {
-        'Content-type': 'application/json'
+        "Content-type": "application/json",
       },
-      body: JSON.stringify(body)
-    })
-      .then(() => {
-        setNewTodo("");
-        update();
-      })
+      body: JSON.stringify(body),
+    }).then(() => {
+      setNewTodo("");
+      update();
+    });
   }
 
   return (
     <div className="app">
-      <main>
-        {/* we centered the "main" tag in our style sheet*/}
+      <Box sx={{ marginTop: "50px" }}>
+        <Typography variant="h2">TODO LIST</Typography>
+        <main>
+          <form
+            sx={{
+              marginTop: "20px",
+            }}
+            onSubmit={addTodo}
+          >
+           <TextField
+  sx={{
+    marginTop: "20px",
+    width: "500px",
+    height: "100%",
+    backgroundColor: "#FFFFFF",
+    color: "#333333",
+    "&:hover": {
+      backgroundColor: "#F0F0F0",
+    },
+  }}
+  type="text"
+  placeholder="Enter new todo"
+  value={newTodo}
+  onChange={(e) => setNewTodo(e.currentTarget.value)}
+/>
 
-        {/* This form collects the item we want to add to our todo, and sends it to the server */}
-        <form className="form" onSubmit={addTodo}>
-          <input type="text" className="todo_input" placeholder="Enter new todo" value={newTodo} onChange={e => setNewTodo(e.currentTarget.value) }/>
-          <button type="submit" className="todo_button">Add todo</button>
-        </form>
 
-        {/* This is a list view of all the todos in the "todo" state variable */}
-        <div>
-          {
-            todos.map((todo, i) => {
-              return <TodoItem todo={todo} key={i} update={update} />
-            })
-          }
-        </div>
+            <Button
+              sx={{
+                justifyContent: "center",
+                marginTop: "40px",
+                marginLeft: "20px",
+                backgroundColor: "#00ADEF",
+                color: "#FFFFFF",
+                textTransform: "none",
+                fontWeight: "bold",
+                "&:hover": {
+                  backgroundColor: "#0077B6",
+                },
+              }}
+              variant="contained"
+              type="submit"
+            >
+              Add todo
+            </Button>
+          </form>
 
-      </main>
+          <div>
+            {todos.map((todo, i) => {
+              return (
+                <Box
+                  sx={{
+                    marginTop: "20px",
+                    width: "100%",
+                    height: "100%",
+                  }}
+                >
+                  <Typography
+                    variant="p"
+                    sx={{
+                      width: "100%",
+                      fontFamily: "Roboto",
+                    }}
+                  >
+                    <Box
+                      sx={{
+                        width: "100%",
+                      }}
+                    >
+                      <TodoItem todo={todo} key={i} update={update} />
+                    </Box>
+                  </Typography>
+                </Box>
+              );
+            })}
+          </div>
+        </main>
+      </Box>
     </div>
-  )
+  );
 }
 export default App;

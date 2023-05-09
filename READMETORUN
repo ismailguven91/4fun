@@ -1,0 +1,7 @@
+BACKEND
+cd todo-list
+npm run start
+
+FRONTEND
+cd 4fun
+npm start
